@@ -13,30 +13,32 @@ const VideoCard = ({ src, canLoad }) => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !loaded) {
-          videoRef.current.src = src;
-          videoRef.current.load();
-          videoRef.current.play();
+          const video = videoRef.current;
+          video.src = src;
+          video.preload = "metadata";
+          video.load();
+          video.play().catch(() => {});
           setLoaded(true);
         }
       },
-      { threshold: 0.6 }
+      { threshold: 0.5 }
     );
 
-    observer.observe(cardRef.current);
+    if (cardRef.current) observer.observe(cardRef.current);
     return () => observer.disconnect();
   }, [canLoad, loaded, src]);
 
   return (
     <>
-      {/* phone body */}
       <div
         ref={cardRef}
         onClick={() => setOpen(true)}
         className="
           relative
-          w-[270px] sm:w-[280px]
+          w-[240px] sm:w-[280px]
           aspect-[9/19.5]
-          rounded-[40px]
+          max-h-[420px] sm:max-h-none
+          rounded-[38px]
           bg-[#0b0f1f]
           shadow-[0_40px_100px_-25px_rgba(0,0,0,0.9)]
           cursor-pointer
@@ -44,11 +46,10 @@ const VideoCard = ({ src, canLoad }) => {
           active:scale-[0.97]
         "
       >
-        {/* screen */}
         <div
           className="
-            absolute inset-[8px]
-            rounded-[32px]
+            absolute inset-[7px]
+            rounded-[30px]
             overflow-hidden
             bg-black
           "
@@ -59,25 +60,16 @@ const VideoCard = ({ src, canLoad }) => {
             loop
             playsInline
             preload="none"
-            className="h-full w-full object-cover"
+            className="w-full h-full object-cover"
           />
-
-          {/* screen vignette */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
         </div>
 
-        {/* speaker / notch */}
-        <div className="absolute top-[10px] left-1/2 -translate-x-1/2 h-[5px] w-[60px] rounded-full bg-black/60" />
-
-        {/* left volume buttons */}
-        <div className="absolute left-[-3px] top-[90px] h-[36px] w-[3px] rounded-full bg-slate-600" />
-        <div className="absolute left-[-3px] top-[135px] h-[36px] w-[3px] rounded-full bg-slate-600" />
-
-        {/* right power button */}
-        <div className="absolute right-[-3px] top-[110px] h-[50px] w-[3px] rounded-full bg-slate-600" />
-
-        {/* subtle edge highlight */}
-        <div className="pointer-events-none absolute inset-0 rounded-[40px] ring-1 ring-white/10" />
+        <div className="absolute top-[10px] left-1/2 -translate-x-1/2 h-[5px] w-[56px] rounded-full bg-black/60" />
+        <div className="absolute left-[-3px] top-[90px] h-[34px] w-[3px] rounded-full bg-slate-600" />
+        <div className="absolute left-[-3px] top-[132px] h-[34px] w-[3px] rounded-full bg-slate-600" />
+        <div className="absolute right-[-3px] top-[110px] h-[46px] w-[3px] rounded-full bg-slate-600" />
+        <div className="pointer-events-none absolute inset-0 rounded-[38px] ring-1 ring-white/10" />
       </div>
 
       {open && <VideoModal src={src} onClose={() => setOpen(false)} />}

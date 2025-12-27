@@ -128,7 +128,7 @@ const HeroSection = () => {
           {/* image */}
           <div className="relative z-20 flex justify-center lg:absolute lg:right-0 lg:bottom-0 hero-image">
             <img
-              src="src/images/hero-image-removebg-preview.png"
+              src="/images/hero-image-removebg-preview.png"
               alt="Avinash"
               className="w-56 sm:w-72 lg:h-[520px] lg:w-auto object-contain grayscale"
             />

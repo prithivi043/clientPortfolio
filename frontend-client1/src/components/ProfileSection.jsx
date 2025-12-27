@@ -120,7 +120,7 @@ const ProfileSection = () => {
         <div className="flex justify-center lg:justify-start profile-image">
           <div className="rounded-[32px] border border-white/30 p-3 bg-white/5 backdrop-blur-sm transition-all duration-500 hover:scale-[1.02]">
             <img
-              src="src/images/hero-image-removebg-preview.png"
+              src="/images/hero-image-removebg-preview.png"
               alt="Avinash Subramaniyan"
               className="rounded-[26px] w-85 sm:w-95 lg:w-105 object-cover"
             />

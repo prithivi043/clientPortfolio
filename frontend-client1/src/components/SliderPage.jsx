@@ -10,10 +10,10 @@ const SliderPage = ({ videos, isActive }) => {
       ([entry]) => {
         if (entry.isIntersecting) setVisible(true);
       },
-      { threshold: 0.4 }
+      { threshold: 0.35 }
     );
 
-    observer.observe(pageRef.current);
+    if (pageRef.current) observer.observe(pageRef.current);
     return () => observer.disconnect();
   }, []);
 
@@ -22,13 +22,13 @@ const SliderPage = ({ videos, isActive }) => {
       ref={pageRef}
       className={`
         min-w-full snap-center
-        flex justify-center gap-8
+        flex justify-center gap-6 sm:gap-8
         transition-transform duration-500
-        ${isActive ? "scale-100" : "scale-[0.94]"}
+        ${isActive ? "scale-100" : "scale-[0.95]"}
       `}
     >
       {videos.map((src, i) => (
-        <VideoCard key={i} src={src} canLoad={visible} />
+        <VideoCard key={i} src={src} canLoad={visible && isActive} />
       ))}
     </div>
   );
