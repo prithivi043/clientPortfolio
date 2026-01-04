@@ -134,13 +134,24 @@ const ProfileSection = () => {
 
       <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
         {/* image */}
-        <div className="flex justify-center lg:justify-start profile-image">
-          <div className="rounded-[32px] border border-white/30 p-3 bg-white/10 backdrop-blur-md">
-            <img
-              src="/images/hero-image-removebg-preview.png"
-              alt="Avinash Subramaniyan"
-              className="rounded-[26px] w-85 sm:w-95 lg:w-105 object-cover"
-            />
+        <div className="relative group perspective-[1400px] w-82 sm:w-80 lg:w-88 mx-auto">
+          <div className="relative rounded-[36px] p-[1.5px] bg-gradient-to-br from-[#10B981]/50 via-transparent to-[#22FF60]/30 transform-gpu preserve-3d transition-transform duration-700 ease-[cubic-bezier(.16,1,.3,1)] group-hover:rotate-x-6 group-hover:rotate-y-[-6deg] animate-[float_6s_ease-in-out_infinite] w-full">
+            <div className="relative rounded-[34px] bg-[#050814]/85 backdrop-blur-xl p-4 border border-white/10 transform-gpu preserve-3d transition-transform duration-500 ease-out group-hover:translate-z-10 w-full">
+              <div className="relative rounded-[28px] overflow-hidden transform-gpu preserve-3d transition-transform duration-300 ease-out group-hover:translate-z-20 w-full">
+                <img
+                  src="/images/hero-image-removebg-preview.png"
+                  alt="Video Editor"
+                  className="object-cover w-full"
+                />
+
+                {/* Light Sweep */}
+                <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                  <div className="absolute -left-2/3 top-0 w-2/3 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent rotate-12 opacity-0 group-hover:opacity-100 group-hover:translate-x-[220%] transition-all duration-[2200ms] ease-[cubic-bezier(.22,1,.36,1)]" />
+                </div>
+
+                {/* Timeline / other optional elements */}
+              </div>
+            </div>
           </div>
         </div>
 
