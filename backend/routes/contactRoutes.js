@@ -4,6 +4,16 @@ import { handleContactForm } from "../controllers/contactController.js";
 
 const router = express.Router();
 
+/* =======================
+   SAFE GET HANDLER
+   ======================= */
+router.get("/", (req, res) => {
+  res.status(200).json({ status: "Contact API active" });
+});
+
+/* =======================
+   POST CONTACT FORM
+   ======================= */
 router.post(
   "/",
   [
