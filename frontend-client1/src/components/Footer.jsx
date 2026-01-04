@@ -1,132 +1,132 @@
 import { useRef, useLayoutEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { FiMail, FiPhone, FiPlay } from "react-icons/fi";
+import { FiMail, FiPhone, FiCamera } from "react-icons/fi";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Footer = () => {
   const footerRef = useRef(null);
+  const cameraRef = useRef(null);
 
   const scrollToSection = (id) => {
-    const section = document.getElementById(id);
-    if (!section) return;
-
-    section.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(".footer-item", {
+    gsap.fromTo(
+      footerRef.current.querySelectorAll(".footer-item"),
+      { y: 24, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 1,
+        stagger: 0.15,
+        ease: "power2.out",
         scrollTrigger: {
           trigger: footerRef.current,
           start: "top 85%",
           once: true,
         },
-        y: 20,
-        opacity: 0,
-        duration: 1.2,
-        ease: "power2.out",
-        stagger: 0.12,
-      });
-    }, footerRef);
+      }
+    );
 
-    return () => ctx.revert();
+    gsap.fromTo(
+      cameraRef.current,
+      { x: -200 },
+      {
+        x: window.innerWidth + 300,
+        duration: 30,
+        repeat: -1,
+        ease: "none",
+      }
+    );
   }, []);
 
   return (
     <footer
       ref={footerRef}
-      className="relative w-full bg-[#050814] px-6 pt-20 pb-10 overflow-hidden"
+      className="relative w-full bg-[#050814] px-6 pt-28 pb-24 overflow-hidden"
     >
-      {/* ambient glow */}
-      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[520px] h-[520px] bg-indigo-600/15 blur-[200px] rounded-full" />
-
-      <div className="relative max-w-7xl mx-auto">
-        {/* top section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-14 border-b border-white/10 pb-14">
-          {/* brand */}
-          <div className="footer-item space-y-4">
-            <h3 className="text-2xl text-white tracking-tight">
-              Avinash <span className="text-indigo-400">Creative</span>
-            </h3>
-
-            <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
-              Crafting cinematic visuals, powerful edits, and creative stories
-              that elevate brands and creators.
-            </p>
-
-            <div className="flex items-center gap-2 text-indigo-400 text-sm">
-              <FiPlay />
-              Visual storytelling studio
+      {/* CONTENT */}
+      <div className="relative z-30 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 mb-24">
+          {/* BRAND */}
+          <div className="footer-item">
+            <div className="bg-[#0b1024] border border-white/10 rounded-xl p-6">
+              <h3 className="text-2xl text-white mb-4">Avinash Creative</h3>
+              <p className="text-slate-200 text-sm leading-relaxed">
+                Crafting cinematic visuals and structured creative systems that
+                communicate clearly and perform consistently.
+              </p>
             </div>
           </div>
 
-          {/* navigation */}
+          {/* NAVIGATION */}
           <div className="footer-item">
-            <h4 className="text-white mb-4 tracking-wide">Quick Links</h4>
+            <div className="bg-[#0b1024] border border-white/10 rounded-xl p-6">
+              <h4 className="text-xs text-white tracking-widest mb-6">
+                NAVIGATION
+              </h4>
 
-            <ul className="space-y-3 text-slate-400 text-sm">
-              <li
-                onClick={() => scrollToSection("HeroSection")}
-                className="cursor-pointer hover:text-white transition"
-              >
-                Home
-              </li>
-              <li
-                onClick={() => scrollToSection("ProjectSamples")}
-                className="cursor-pointer hover:text-white transition"
-              >
-                Projects
-              </li>
-              <li
-                onClick={() => scrollToSection("SkillsSection")}
-                className="cursor-pointer hover:text-white transition"
-              >
-                Skills
-              </li>
-              <li
-                onClick={() => scrollToSection("ProfileSection")}
-                className="cursor-pointer hover:text-white transition"
-              >
-                About
-              </li>
-              <li
-                onClick={() => scrollToSection("ContactForm")}
-                className="cursor-pointer hover:text-white transition"
-              >
-                Contact
-              </li>
-            </ul>
+              <ul className="space-y-3 text-slate-200 text-sm">
+                {[
+                  { label: "Home", id: "HeroSection" },
+                  { label: "Profile", id: "ProfileSection" },
+                  { label: "Skills", id: "SkillsSection" },
+                  { label: "Projects", id: "ProjectSamples" },
+                  { label: "Contact", id: "ContactForm" },
+                ].map((item) => (
+                  <li key={item.id}>
+                    <button
+                      onClick={() => scrollToSection(item.id)}
+                      className="hover:text-indigo-400 transition"
+                    >
+                      {item.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
-          {/* contact */}
+          {/* CONTACT */}
           <div className="footer-item">
-            <h4 className="text-white mb-4 tracking-wide">Get in Touch</h4>
+            <div className="bg-[#0b1024] border border-white/10 rounded-xl p-6">
+              <h4 className="text-xs text-white tracking-widest mb-6">
+                CONTACT
+              </h4>
 
-            <div className="space-y-3 text-slate-400 text-sm">
-              <div className="flex items-center gap-2 hover:text-white transition">
-                <FiMail className="text-indigo-400" />
-                avinashpersonal1234@gmail.com
-              </div>
-
-              <div className="flex items-center gap-2 hover:text-white transition">
-                <FiPhone className="text-indigo-400" />
-                +91 93602 22602
+              <div className="space-y-3 text-slate-200 text-sm">
+                <div className="flex items-center gap-3">
+                  <FiMail className="text-indigo-400" />
+                  avinashpersonal1234@gmail.com
+                </div>
+                <div className="flex items-center gap-3">
+                  <FiPhone className="text-indigo-400" />
+                  +91 93602 22602
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* bottom bar */}
-        <div className="footer-item mt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-slate-500 text-xs">
-          <p>
-            © {new Date().getFullYear()} Avinash Creative. All rights reserved.
-          </p>
-          <p className="tracking-wide">Designed & edited with precision</p>
+        {/* FOOTER BAR */}
+        <div className="pt-6 border-t border-white/10 text-slate-400 text-xs flex flex-col sm:flex-row justify-between gap-4">
+          <p>© {new Date().getFullYear()} Avinash Creative</p>
+          <p>Clarity · Motion · Structure</p>
+        </div>
+      </div>
+
+      {/* CAMERA */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-[140px] z-10">
+        <div ref={cameraRef} className="relative">
+          <div className="absolute inset-0 rounded-full bg-indigo-400/40 blur-2xl scale-150" />
+          <div className="h-16 w-16 rounded-full bg-[#050814] border border-white/20 flex items-center justify-center text-indigo-400 text-2xl">
+            <FiCamera />
+          </div>
         </div>
       </div>
     </footer>

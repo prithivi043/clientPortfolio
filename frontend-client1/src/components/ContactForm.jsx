@@ -13,8 +13,6 @@ import {
 
 gsap.registerPlugin(ScrollTrigger);
 
-const API_BASE = import.meta.env.VITE_API_BASE;
-
 const countryCodes = [
   { code: "+91", label: "IN" },
   { code: "+1", label: "US" },
@@ -51,14 +49,14 @@ const ContactForm = () => {
     };
 
     try {
-      const res = await fetch(`${API_BASE}/api/contact`, {
+      const res = await fetch("http://localhost:5000/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Error");
+      if (!res.ok) throw new Error(data.message);
 
       setStatus("Message sent successfully");
       setForm({
@@ -68,7 +66,7 @@ const ContactForm = () => {
         phone: "",
         message: "",
       });
-    } catch (err) {
+    } catch {
       setStatus("Failed to send message");
     } finally {
       setLoading(false);
@@ -225,7 +223,7 @@ const ContactForm = () => {
 
               <button
                 disabled={loading}
-                className="cf-submit w-full flex items-center justify-center gap-3 bg-gradient-to-r from-indigo-600 to-fuchsia-600 py-3 rounded-lg text-white hover:opacity-90 transition"
+                className="cursor-pointer z-10 cf-submit w-full flex items-center justify-center gap-3 bg-gradient-to-r from-indigo-600 to-fuchsia-600 py-3 rounded-lg text-white hover:opacity-90 transition"
               >
                 <FiSend />
                 {loading ? "Sending..." : "Send Message"}

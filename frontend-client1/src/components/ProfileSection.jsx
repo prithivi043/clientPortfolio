@@ -4,28 +4,33 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* Counter – GSAP driven */
-const Counter = ({ end, trigger, duration = 1.6 }) => {
+/* ===================== COUNTER ===================== */
+const Counter = ({ end, start, duration = 2.2 }) => {
   const [value, setValue] = useState(0);
   const valueRef = useRef(0);
+  const hasStarted = useRef(false);
 
   useEffect(() => {
-    if (!trigger) return;
+    if (!start || hasStarted.current) return;
+
+    hasStarted.current = true;
+    valueRef.current = Math.floor(-end * 0.15);
 
     gsap.to(valueRef, {
       current: end,
       duration,
-      ease: "power3.out",
+      delay: 0.25,
+      ease: "power2.inOut",
       onUpdate: () => {
-        setValue(Math.floor(valueRef.current));
+        setValue(Math.max(0, Math.floor(valueRef.current)));
       },
     });
-  }, [trigger, end, duration]);
+  }, [start, end, duration]);
 
   return <span>{value}</span>;
 };
 
-/* Typewriter */
+/* ===================== TYPEWRITER ===================== */
 const Typewriter = ({ words, speed = 90, pause = 1400 }) => {
   const [text, setText] = useState("");
   const [wordIndex, setWordIndex] = useState(0);
@@ -62,36 +67,41 @@ const Typewriter = ({ words, speed = 90, pause = 1400 }) => {
   );
 };
 
+/* ===================== PROFILE SECTION ===================== */
 const ProfileSection = () => {
   const sectionRef = useRef(null);
-  const [startCounters, setStartCounters] = useState(false);
+  const startCountersRef = useRef(false);
+  const [, forceRender] = useState(false);
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 70%",
-          once: true,
-          onEnter: () => setStartCounters(true),
-        },
-        defaults: {
+      gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 80%",
+            once: true,
+            onEnter: () => {
+              startCountersRef.current = true;
+              forceRender((v) => !v);
+            },
+          },
+        })
+        .from(".profile-image", {
+          x: -60,
+          opacity: 0,
+          filter: "blur(10px)",
           duration: 1.2,
           ease: "power4.out",
-        },
-      });
-
-      tl.from(".profile-image", {
-        x: -60,
-        opacity: 0,
-        filter: "blur(10px)",
-      })
+        })
         .from(
           ".profile-text",
           {
             y: 40,
             opacity: 0,
             filter: "blur(8px)",
+            duration: 1.2,
+            ease: "power4.out",
           },
           "-=0.8"
         )
@@ -101,6 +111,8 @@ const ProfileSection = () => {
             y: 30,
             opacity: 0,
             stagger: 0.15,
+            duration: 1,
+            ease: "power3.out",
           },
           "-=0.6"
         );
@@ -113,12 +125,17 @@ const ProfileSection = () => {
     <section
       id="ProfileSection"
       ref={sectionRef}
-      className="w-full bg-gradient-to-br from-[#050b2c] to-black py-24 px-6 overflow-hidden"
+      className="relative w-full py-24 px-6 overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
-        {/* Left Image */}
+      {/* gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#070a2e] via-[#050814] to-black" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(91,108,255,0.18),transparent_45%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(255,180,90,0.12),transparent_40%)]" />
+
+      <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
+        {/* image */}
         <div className="flex justify-center lg:justify-start profile-image">
-          <div className="rounded-[32px] border border-white/30 p-3 bg-white/5 backdrop-blur-sm transition-all duration-500 hover:scale-[1.02]">
+          <div className="rounded-[32px] border border-white/30 p-3 bg-white/10 backdrop-blur-md">
             <img
               src="/images/hero-image-removebg-preview.png"
               alt="Avinash Subramaniyan"
@@ -127,16 +144,16 @@ const ProfileSection = () => {
           </div>
         </div>
 
-        {/* Right Content */}
+        {/* content */}
         <div className="text-white space-y-6 profile-text">
-          <p className="text-[24px] text-white/80 font-[Poppins]">Hi! I’m</p>
+          <p className="text-[20px] text-white/75 font-[Poppins]">Hello, I’m</p>
 
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-[Poppins]">
             Avinash Subramaniyan
           </h2>
 
           <h3 className="text-3xl sm:text-4xl font-semibold font-[Poppins]">
-            <span className="text-[#5B6CFF]">I’m a </span>
+            <span className="text-[#5B6CFF]">Working as a </span>
             <Typewriter
               words={[
                 { text: "Creative Designer", color: "text-amber-400" },
@@ -145,49 +162,57 @@ const ProfileSection = () => {
             />
           </h3>
 
-          <ul className="space-y-4 text-white/90 text-[24px] leading-relaxed font-[Poppins] max-w-xl">
+          <ul className="space-y-4 text-white/90 text-[21px] leading-relaxed font-[Poppins] max-w-xl">
             <li className="flex gap-3">
               <span>•</span>
               <span>
-                I help brands tell powerful visual stories through design, video
-                editing, and content creation.
+                I collaborate closely with clients to clearly understand their
+                goals, audience, and expectations before any creative work
+                begins.
               </span>
             </li>
             <li className="flex gap-3">
               <span>•</span>
               <span>
-                From concept to campaign, I bring ideas to life that look great
-                and perform even better.
+                Each project follows a structured process with transparent
+                communication, realistic timelines, and consistent updates.
+              </span>
+            </li>
+            <li className="flex gap-3">
+              <span>•</span>
+              <span>
+                The focus is always on delivering visuals that feel reliable,
+                professional, and aligned with long-term brand growth.
               </span>
             </li>
           </ul>
 
-          {/* Counters */}
+          {/* counters */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-8 max-w-xl">
             <div className="profile-counter text-center">
               <p className="text-4xl font-bold font-[Poppins]">
-                <Counter end={3} trigger={startCounters} />+
+                <Counter end={3} start={startCountersRef.current} />+
               </p>
-              <p className="mt-1 text-sm uppercase tracking-wider text-white/70">
-                Years of Exp
-              </p>
-            </div>
-
-            <div className="profile-counter text-center">
-              <p className="text-4xl font-bold font-[Poppins]">
-                <Counter end={50} trigger={startCounters} />+
-              </p>
-              <p className="mt-1 text-sm uppercase tracking-wider text-white/70">
-                Graphic Design
+              <p className="mt-1 text-sm uppercase tracking-wider text-white/65">
+                Years of Experience
               </p>
             </div>
 
             <div className="profile-counter text-center">
               <p className="text-4xl font-bold font-[Poppins]">
-                <Counter end={500} trigger={startCounters} />+
+                <Counter end={50} start={startCountersRef.current} />+
               </p>
-              <p className="mt-1 text-sm uppercase tracking-wider text-white/70">
-                Video Editing
+              <p className="mt-1 text-sm uppercase tracking-wider text-white/65">
+                Client Projects Completed
+              </p>
+            </div>
+
+            <div className="profile-counter text-center">
+              <p className="text-4xl font-bold font-[Poppins]">
+                <Counter end={500} start={startCountersRef.current} />+
+              </p>
+              <p className="mt-1 text-sm uppercase tracking-wider text-white/65">
+                Videos Delivered Successfully
               </p>
             </div>
           </div>

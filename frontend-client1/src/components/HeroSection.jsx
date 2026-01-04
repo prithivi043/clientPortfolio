@@ -1,50 +1,78 @@
 import React, { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import FloatingCameraIcon from "./FloatingCameraIcon";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const HeroSection = () => {
   const sectionRef = useRef(null);
+  const sparkleLayerRef = useRef(null);
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        defaults: { ease: "power4.out", duration: 1.2 },
+      gsap.from(".hero-block", {
+        y: 30,
+        opacity: 0,
+        duration: 0.9,
+        ease: "power3.out",
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: "top 75%",
+          start: "top 80%",
           once: true,
         },
       });
 
-      tl.from(".camera-icon", { y: -30, opacity: 0, filter: "blur(8px)" })
-        .from(
-          ".hero-badge",
-          { y: 40, opacity: 0, filter: "blur(10px)" },
-          "-=0.8"
-        )
-        .from(
-          ".hero-bg-text",
-          { scaleY: 0.6, opacity: 0, transformOrigin: "bottom" },
-          "-=0.9"
-        )
-        .from(
-          ".hero-foreground",
-          { y: 50, opacity: 0, filter: "blur(6px)" },
-          "-=0.9"
-        )
-        .from(".hero-image", { x: 80, opacity: 0, filter: "blur(8px)" }, "-=1");
+      if ("ontouchstart" in window) return;
 
-      gsap.to(".camera-icon", {
-        y: -16,
-        duration: 4,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-        delay: 1.5,
-      });
+      const createSparkle = (x, y) => {
+        const sparkle = document.createElement("span");
+        sparkle.className = "cursor-sparkle";
+
+        sparkle.style.left = `${x}px`;
+        sparkle.style.top = `${y}px`;
+
+        sparkleLayerRef.current.appendChild(sparkle);
+
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 20 + Math.random() * 30;
+
+        gsap.fromTo(
+          sparkle,
+          {
+            scale: 1,
+            opacity: 1,
+          },
+          {
+            x: Math.cos(angle) * distance,
+            y: Math.sin(angle) * distance,
+            scale: 0,
+            opacity: 0,
+            duration: 0.9,
+            ease: "power2.out",
+            onComplete: () => sparkle.remove(),
+          }
+        );
+      };
+
+      let lastTime = 0;
+
+      const onMove = (e) => {
+        const now = Date.now();
+        if (now - lastTime < 30) return;
+        lastTime = now;
+
+        const rect = sectionRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        createSparkle(x, y);
+      };
+
+      sectionRef.current.addEventListener("mousemove", onMove);
+
+      return () => {
+        sectionRef.current.removeEventListener("mousemove", onMove);
+      };
     }, sectionRef);
 
     return () => ctx.revert();
@@ -52,55 +80,104 @@ const HeroSection = () => {
 
   return (
     <section
-      id="HeroSection"
       ref={sectionRef}
-      className="relative min-h-screen w-full bg-gradient-to-br from-[#050b2c] to-black flex items-center justify-center px-4 overflow-hidden
-                 pt-20 lg:pt-0" /* Added padding-top 20px on mobile, 0 on large screens */
+      id="HeroSection"
+      className="relative min-h-screen w-full flex items-center justify-center overflow-hidden"
     >
-      <FloatingCameraIcon />
+      {/* background image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center scale-105 blur-[1px] opacity-95"
+        style={{
+          backgroundImage:
+            "url('https://wallpapers.com/images/hd/graphic-design-g-monogram-design-c4wecexdbz0k1ppq.jpg')",
+        }}
+      />
 
-      <div className="relative w-full max-w-7xl rounded-[28px] border border-white/40 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md overflow-hidden px-6 sm:px-10 py-10 sm:py-12">
-        {/* badge */}
-        <div className="relative z-30 mb-8 lg:mb-2 lg:mt-10 hero-badge flex justify-center lg:justify-start">
-          <span className="relative inline-flex items-center px-6 lg:px-8 py-2.5 rounded-full bg-[#5B6CFF] text-white text-lg lg:text-[25px] font-bold font-[Poppins] shadow-[0_8px_20px_rgba(91,108,255,0.35)]">
-            Graphic Design & Video Editing
-            <span className="absolute -bottom-[6px] left-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-[#5B6CFF] rotate-45 shadow-[0_6px_14px_rgba(91,108,255,0.3)]" />
-          </span>
-        </div>
+      {/* dark overlays */}
+      <div className="absolute inset-0 bg-black/70" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80" />
 
-        <div className="relative flex flex-col items-center gap-10 lg:block lg:h-[460px]">
-          {/* background text */}
-          <h1
-            className="
-              hidden lg:block
-              absolute left-0 bottom-44
-              z-10
-              font-extrabold text-white
-              leading-none tracking-tight
-              text-[10rem]
-              transform scale-y-150 origin-bottom
-              select-none pointer-events-none
-              hero-bg-text
-            "
-          >
-            PORTFOLIO
+      {/* sparkle layer */}
+      <div
+        ref={sparkleLayerRef}
+        className="pointer-events-none absolute inset-0 z-30"
+      />
+
+      {/* glowing arrows */}
+      <svg
+        className="absolute left-[12%] top-[35%] w-40 h-40 text-[#22FF60]"
+        viewBox="0 0 200 200"
+        fill="none"
+        style={{
+          filter:
+            "drop-shadow(0 0 6px rgba(34,255,96,0.7)) drop-shadow(0 0 16px rgba(34,255,96,0.45))",
+        }}
+      >
+        <path
+          d="M20 120 C40 40, 120 40, 140 80"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M140 80 L130 70 M140 80 L125 85"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+      </svg>
+
+      <svg
+        className="absolute right-[14%] bottom-[30%] w-36 h-36 text-[#22FF60]"
+        viewBox="0 0 200 200"
+        fill="none"
+        style={{
+          filter:
+            "drop-shadow(0 0 6px rgba(34,255,96,0.7)) drop-shadow(0 0 16px rgba(34,255,96,0.45))",
+        }}
+      >
+        <path
+          d="M180 60 C140 160, 60 160, 40 120"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M40 120 L55 115 M40 120 L52 132"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+      </svg>
+
+      {/* content */}
+      <div className="relative z-10 text-center px-6">
+        <div className="hero-block max-w-3xl mx-auto">
+          <p className="text-sm tracking-widest text-gray-200 mb-6">
+            GRAPHIC DESIGN · VIDEO EDITING
+          </p>
+
+          <h1 className="leading-[0.95] mb-10">
+            <span
+              className="
+                block text-[64px] sm:text-[96px] font-extrabold
+                bg-gradient-to-b from-white via-[#f1f1f1] to-[#cfcfcf]
+                bg-clip-text text-transparent
+                drop-shadow-[0_2px_18px_rgba(255,255,255,0.45)]
+              "
+            >
+              Portfolio
+            </span>
           </h1>
 
-          {/* foreground */}
-          <div
-            className="
-              relative z-30
-              flex flex-col items-center text-center
-              lg:absolute lg:left-12
-              lg:top-[65%]
-              lg:items-start lg:text-left
-              hero-foreground
-            "
-          >
-            <p className="text-white/90 text-2xl sm:text-3xl lg:text-[32px] font-[Poppins] mb-6">
-              Avinash Subramaniyan
-            </p>
+          <p className="text-lg text-gray-100 max-w-xl mx-auto mb-14 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+            I design visual systems and motion experiences that communicate with
+            clarity, restraint, and long-term intent.
+          </p>
 
+          <div className="flex items-center justify-center gap-10">
             <button
               onClick={() =>
                 document
@@ -108,33 +185,41 @@ const HeroSection = () => {
                   ?.scrollIntoView({ behavior: "smooth" })
               }
               className="
-                px-10 py-3
-                rounded-full
-                font-[Poppins] font-medium
-                text-white
-                bg-white/10 backdrop-blur-md
-                border border-white/30
-                shadow-lg
-                transition-all duration-300 ease-out
-                hover:scale-105 hover:bg-white hover:text-black
-                hover:shadow-white/40
-                active:scale-95
+                relative text-base font-medium text-white
+                drop-shadow-[0_2px_10px_rgba(255,255,255,0.4)]
+                after:absolute after:left-0 after:-bottom-2
+                after:h-[2px] after:w-full after:bg-white
+                after:transition-transform after:duration-300
+                hover:after:scale-x-0
               "
             >
-              Learn More
+              View work
             </button>
-          </div>
 
-          {/* image */}
-          <div className="relative z-20 flex justify-center lg:absolute lg:right-0 lg:bottom-0 hero-image">
-            <img
-              src="/images/hero-image-removebg-preview.png"
-              alt="Avinash"
-              className="w-56 sm:w-72 lg:h-[520px] lg:w-auto object-contain grayscale"
-            />
+            <span className="text-base font-medium text-[#22FF60] drop-shadow-[0_0_12px_rgba(34,255,96,0.8)]">
+              Avinash Subramaniyan
+            </span>
           </div>
         </div>
       </div>
+
+      {/* sparkle styles */}
+      <style jsx>{`
+        .cursor-sparkle {
+          position: absolute;
+          width: 6px;
+          height: 6px;
+          border-radius: 999px;
+          background: radial-gradient(
+            circle,
+            rgba(34, 255, 96, 1) 0%,
+            rgba(34, 255, 96, 0.4) 40%,
+            transparent 70%
+          );
+          box-shadow: 0 0 10px rgba(34, 255, 96, 0.9);
+          transform: translate(-50%, -50%);
+        }
+      `}</style>
     </section>
   );
 };

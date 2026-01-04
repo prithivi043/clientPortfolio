@@ -1,8 +1,17 @@
-import React, { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import { FaEnvelope, FaPhoneAlt, FaArrowRight, FaUser } from "react-icons/fa";
+import { FiCamera, FiVideo, FiImage } from "react-icons/fi";
+import { TbAperture } from "react-icons/tb";
+import {
+  FaPlay,
+  FaEnvelope,
+  FaPhoneAlt,
+  FaArrowRight,
+  FaUser,
+} from "react-icons/fa";
+
 import {
   SiAdobephotoshop,
   SiAdobeillustrator,
@@ -10,218 +19,356 @@ import {
   SiAdobeaftereffects,
   SiAdobepremierepro,
 } from "react-icons/si";
-import { TbColorSwatch } from "react-icons/tb";
 
-import ResumePDF from "/resume/Avinash-resume.pdf"; // Adjust path to your resume PDF
+import ResumePDF from "/resume/Avinash-resume.pdf";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const ElitePortfolioSection = () => {
-  const sectionRef = useRef(null);
+  const coreRef = useRef(null);
+  const expertiseRef = useRef(null);
+
+  const centerCameraRef = useRef(null);
+  const orbitInnerRef = useRef(null);
+  const orbitOuterRef = useRef(null);
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.set(".icon-safe", {
-        opacity: 1,
-        scale: 1,
-        clearProps: "all",
+      gsap.to(centerCameraRef.current, {
+        rotate: 360,
+        duration: 28,
+        repeat: -1,
+        ease: "linear",
       });
 
-      const tl = gsap.timeline({
+      gsap.to(orbitInnerRef.current, {
+        rotate: 360,
+        duration: 42,
+        repeat: -1,
+        ease: "linear",
+      });
+
+      gsap.to(orbitOuterRef.current, {
+        rotate: -360,
+        duration: 78,
+        repeat: -1,
+        ease: "linear",
+      });
+
+      gsap.from(".expertise-icon", {
         scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 70%",
+          trigger: expertiseRef.current,
+          start: "top 75%",
           once: true,
         },
-        defaults: {
-          ease: "power4.out",
-          duration: 1.1,
-        },
-      });
-
-      tl.from(".elite-card", {
-        y: 60,
+        y: 30,
         opacity: 0,
-        stagger: 0.18,
-      }).from(
-        ".elite-card-inner",
-        {
-          y: 30,
-          opacity: 0,
-          stagger: 0.12,
-        },
-        "-=0.7"
-      );
-
-      // hard reset icons AFTER animations complete
-      tl.add(() => {
-        gsap.set(".icon-safe", {
-          opacity: 1,
-          scale: 1,
-          clearProps: "transform,opacity",
-        });
+        stagger: 0.12,
+        duration: 1,
+        ease: "power3.out",
       });
-    }, sectionRef);
+    });
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section
-      id="SkillsSection"
-      ref={sectionRef}
-      className="relative w-full overflow-hidden bg-[#050814] px-6 py-28"
-    >
-      {/* background glow */}
-      <div className="absolute top-[-200px] left-[-200px] h-[500px] w-[500px] rounded-full bg-indigo-500/15 blur-[160px]" />
-      <div className="absolute bottom-[-200px] right-[-200px] h-[500px] w-[500px] rounded-full bg-sky-500/15 blur-[160px]" />
+    <>
+      {/* ================= CORE SKILLS ================= */}
+      <section
+        id="SkillsSection"
+        ref={coreRef}
+        className="relative w-full bg-[#02030a] px-6 py-28 lg:py-32 overflow-hidden"
+      >
+        {/* background field */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-[#02030a] via-[#040620] to-[#02030a]" />
 
-      <div className="relative mx-auto max-w-7xl space-y-28">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 items-start">
-          {/* skills */}
-          <GlassCard>
-            <div className="elite-card-inner mb-5">
-              <SectionTitle title="Skills" />
-              <p className="mt-3 text-white text-xl font-semibold">
-                Design & Creative
-              </p>
-              <div className="mt-3 h-[1px] w-14 bg-indigo-400/70 rounded-full" />
-            </div>
+          {/* shared glow anchor */}
+          <div className="absolute left-[48%] top-1/2 -translate-y-1/2 h-[520px] w-[520px] rounded-full bg-indigo-500/18 blur-[220px]" />
+        </div>
 
-            <div className="elite-card-inner grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div
+          className="
+      relative
+      max-w-6xl
+      mx-auto
+      grid
+      grid-cols-1
+      lg:grid-cols-[1fr_0.9fr]
+      gap-10
+      lg:gap-12
+      items-center
+    "
+        >
+          {/* LEFT — text */}
+          <div className="relative z-10 max-w-xl">
+            <p className="text-xs tracking-[0.4em] text-indigo-400 mb-4">
+              CORE SKILLS
+            </p>
+
+            <h2 className="text-4xl lg:text-5xl text-white mb-10 leading-tight">
+              Design & Creative
+            </h2>
+
+            <ul className="space-y-7 text-gray-300 text-lg">
               {[
                 "Graphic Design",
                 "Motion Graphics",
                 "Video Editing",
                 "Content Creation",
                 "Branding",
-              ].map((item) => (
-                <div
-                  key={item}
-                  className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-gray-300"
+              ].map((skill, i) => (
+                <li
+                  key={skill}
+                  className="group relative pl-14 flex items-center"
                 >
-                  <span className="h-3 w-3 rounded-full bg-indigo-400 ring-2 ring-indigo-400/30" />
-                  {item}
+                  {/* rail */}
+                  <span className="absolute left-1 top-0 bottom-0 w-px bg-white/10" />
+
+                  {/* node */}
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-3 w-3 rounded-full bg-indigo-400 shadow-[0_0_14px_rgba(99,102,241,0.9)] transition-transform duration-300 group-hover:scale-125" />
+
+                  {/* connector */}
+                  <span className="absolute left-5 top-1/2 -translate-y-1/2 h-px w-8 bg-indigo-400/40" />
+
+                  <span className="relative z-10 group-hover:text-white transition">
+                    {skill}
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            {/* directional energy */}
+            <div className="pointer-events-none absolute -right-24 top-1/2 -translate-y-1/2 h-px w-24 bg-gradient-to-r from-indigo-400/40 to-transparent" />
+          </div>
+
+          {/* RIGHT — orbit visually pulled into text */}
+          <div className="relative hidden lg:flex justify-start">
+            <div className="relative w-72 h-72 flex items-center justify-center -translate-x-14">
+              {/* outer orbit */}
+              <div
+                ref={orbitOuterRef}
+                className="absolute inset-0 rounded-full"
+              >
+                <OrbitIcon position="top" icon={<FiVideo />} />
+                <OrbitIcon position="right" icon={<FiImage />} />
+                <OrbitIcon position="bottom" icon={<FaPlay />} />
+              </div>
+
+              {/* inner orbit */}
+              <div
+                ref={orbitInnerRef}
+                className="absolute inset-9 rounded-full"
+              >
+                <OrbitIcon position="left" icon={<TbAperture />} />
+                <OrbitIcon position="top" icon={<FiCamera />} />
+              </div>
+
+              {/* core */}
+              <div
+                ref={centerCameraRef}
+                className="
+            relative z-10
+            w-18 h-18
+            rounded-full
+            bg-white/5
+            border border-white/15
+            flex items-center justify-center
+            text-indigo-400 text-3xl
+            shadow-[0_0_40px_rgba(99,102,241,0.55)]
+          "
+              >
+                <FiCamera />
+              </div>
+
+              {/* depth + bind glow */}
+              <div className="absolute inset-0 rounded-full bg-indigo-400/10 blur-2xl pointer-events-none" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= EXPERTISE SECTION ================= */}
+      <section
+        ref={expertiseRef}
+        className="relative w-full min-h-screen bg-[#02020a] px-6 py-40 overflow-hidden"
+      >
+        {/* animated gradient waves */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#02020a] via-[#070b2c] to-[#02020a]" />
+
+          <div className="absolute -top-40 left-1/3 h-[520px] w-[520px] rounded-full bg-indigo-500/20 blur-[220px] animate-[pulse_8s_ease-in-out_infinite]" />
+          <div className="absolute top-1/3 -right-40 h-[600px] w-[600px] rounded-full bg-sky-400/20 blur-[260px] animate-[pulse_10s_ease-in-out_infinite]" />
+          <div className="absolute -bottom-40 left-10 h-[520px] w-[520px] rounded-full bg-purple-500/20 blur-[240px] animate-[pulse_12s_ease-in-out_infinite]" />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto">
+          {/* heading */}
+          <div className="max-w-xl mb-28">
+            <p className="text-xs tracking-[0.4em] text-sky-400 mb-6">
+              EXPERTISE
+            </p>
+            <h2 className="text-4xl lg:text-5xl text-white leading-tight">
+              Software & Execution
+            </h2>
+            <p className="mt-6 text-gray-400 max-w-md">
+              Tools I use to transform ideas into polished, production-ready
+              visuals.
+            </p>
+          </div>
+
+          {/* flowing signal line */}
+          <div className="relative mb-32">
+            <div className="absolute left-0 right-0 top-1/2 h-px bg-gradient-to-r from-transparent via-indigo-400/40 to-transparent" />
+            <div className="absolute left-0 right-0 top-1/2 h-[2px] bg-gradient-to-r from-transparent via-white/10 to-transparent blur-sm" />
+
+            <div className="relative flex flex-wrap lg:flex-nowrap items-center justify-between gap-16">
+              {[
+                {
+                  icon: <SiAdobephotoshop />,
+                  label: "Photoshop",
+                  color: "#31A8FF",
+                },
+                {
+                  icon: <SiAdobeillustrator />,
+                  label: "Illustrator",
+                  color: "#FF9A00",
+                },
+                {
+                  icon: <SiAdobelightroom />,
+                  label: "Lightroom",
+                  color: "#31A8FF",
+                },
+                {
+                  icon: <SiAdobeaftereffects />,
+                  label: "After Effects",
+                  color: "#9999FF",
+                },
+                {
+                  icon: <SiAdobepremierepro />,
+                  label: "Premiere Pro",
+                  color: "#9999FF",
+                },
+              ].map((tool) => (
+                <div
+                  key={tool.label}
+                  className="tool-icon group relative flex flex-col items-center gap-6"
+                >
+                  <div
+                    className="relative h-24 w-24 rounded-2xl border border-white/15 bg-white/10 backdrop-blur-md flex items-center justify-center text-[42px] transition-all duration-500 group-hover:-translate-y-2"
+                    style={{ color: tool.color }}
+                  >
+                    {tool.icon}
+
+                    {/* glow ring */}
+                    <span
+                      className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      style={{
+                        boxShadow: `0 0 40px ${tool.color}66`,
+                      }}
+                    />
+
+                    {/* node */}
+                    <span
+                      className="absolute -bottom-4 h-3 w-3 rounded-full"
+                      style={{
+                        background: tool.color,
+                        boxShadow: `0 0 18px ${tool.color}`,
+                      }}
+                    />
+                  </div>
+
+                  <p className="text-sm tracking-wide text-gray-300 group-hover:text-white transition">
+                    {tool.label}
+                  </p>
                 </div>
               ))}
             </div>
-          </GlassCard>
+          </div>
 
-          {/* software */}
-          <GlassCard center>
-            <div className="elite-card-inner">
-              <SectionTitle title="Software Expertise" />
-
-              <div className="mt-10 grid grid-cols-3 gap-8 place-items-center">
-                <IconTile brand="ps">
-                  <SiAdobephotoshop />
-                </IconTile>
-                <IconTile brand="ai">
-                  <SiAdobeillustrator />
-                </IconTile>
-                <IconTile brand="lr">
-                  <SiAdobelightroom />
-                </IconTile>
-                <IconTile brand="ae">
-                  <SiAdobeaftereffects />
-                </IconTile>
-                <IconTile brand="pr">
-                  <SiAdobepremierepro />
-                </IconTile>
-                <IconTile brand="color">
-                  <TbColorSwatch />
-                </IconTile>
-              </div>
+          {/* connect terminal */}
+          <div className="relative mt-40 flex justify-center expertise-terminal">
+            <div className="absolute inset-0 flex justify-center">
+              <div className="h-[440px] w-[440px] rounded-full bg-gradient-to-br from-purple-500/25 via-indigo-500/15 to-emerald-500/25 blur-[180px]" />
             </div>
-          </GlassCard>
 
-          {/* resume */}
-          <GlassCard center>
-            <div className="elite-card-inner">
-              <SectionTitle title="Resume" />
-              <div className="mt-10 flex flex-col items-center gap-8">
-                {/* person icon in the center */}
-                <div className="w-36 h-44 rounded-xl border border-white/15 bg-white/10 flex items-center justify-center text-indigo-400 text-6xl">
-                  <FaUser />
+            <div className="relative z-10 w-full max-w-4xl rounded-3xl border border-white/15 bg-white/5 backdrop-blur-xl px-10 py-16 text-center">
+              <div className="absolute -top-10 left-1/2 -translate-x-1/2 h-10 w-px bg-gradient-to-b from-white/40 to-transparent" />
+              <div className="absolute -top-[52px] left-1/2 -translate-x-1/2 h-3 w-3 rounded-full bg-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.9)]" />
+
+              <p className="text-xs tracking-[0.4em] text-indigo-400 mb-4">
+                LET’S CONNECT
+              </p>
+              <h3 className="text-3xl sm:text-4xl text-white mb-12">
+                Ready to work together
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-12 items-start">
+                <div className="flex flex-col items-center">
+                  <p className="text-xs tracking-[0.35em] text-purple-400 mb-4">
+                    PROFILE
+                  </p>
+
+                  <a
+                    href={ResumePDF}
+                    download="My_Resume.pdf"
+                    className="group inline-flex items-center gap-4 text-lg text-gray-300 hover:text-purple-400 transition-colors"
+                  >
+                    <span className="relative w-14 h-16 rounded-xl border border-white/20 bg-white/10 flex items-center justify-center text-purple-400 text-xl group-hover:scale-110 transition-transform">
+                      <FaUser />
+                    </span>
+                    View Resume
+                    <FaArrowRight className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </a>
                 </div>
 
-                {/* download resume link */}
-                <a
-                  href={ResumePDF}
-                  download="My_Resume.pdf"
-                  className="flex items-center gap-2 text-sm text-gray-300 hover:text-indigo-400 transition-colors"
-                >
-                  VIEW RESUME <FaArrowRight />
-                </a>
-              </div>
-            </div>
-          </GlassCard>
-        </div>
+                <div className="flex flex-col items-center">
+                  <p className="text-xs tracking-[0.35em] text-emerald-400 mb-4">
+                    CONTACT
+                  </p>
 
-        {/* contact */}
-        <div className="mx-auto max-w-3xl elite-card">
-          <GlassCard center>
-            <div className="elite-card-inner">
-              <SectionTitle title="Contact" />
-              <div className="mt-10 space-y-6 text-gray-300 text-lg">
-                <ContactRow
-                  icon={<FaEnvelope className="text-sky-400 text-xl" />}
-                  value="avinashpersonal1234@gmail.com"
-                  link="mailto:avinashpersonal1234@gmail.com"
-                />
-                <ContactRow
-                  icon={<FaPhoneAlt className="text-emerald-400 text-xl" />}
-                  value="+91 93602 22602"
-                  link="tel:+919360222602"
-                />
+                  <div className="space-y-5 text-lg text-gray-300">
+                    <ContactRow
+                      icon={<FaEnvelope className="text-sky-400 text-xl" />}
+                      value="avinashpersonal1234@gmail.com"
+                      link="mailto:avinashpersonal1234@gmail.com"
+                    />
+                    <ContactRow
+                      icon={<FaPhoneAlt className="text-emerald-400 text-xl" />}
+                      value="+91 93602 22602"
+                      link="tel:+919360222602"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-          </GlassCard>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 };
 
-/* reusable components */
-
-const GlassCard = ({ children, center }) => (
-  <div
-    className={`elite-card rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-10 ${
-      center ? "text-center" : ""
-    }`}
-  >
-    {children}
-  </div>
-);
-
-const SectionTitle = ({ title }) => (
-  <h2 className="text-indigo-400 text-3xl font-bold tracking-widest">
-    {title.toUpperCase()}
-  </h2>
-);
-
-const IconTile = ({ children, brand }) => {
-  const brandStyles = {
-    ps: "text-[#31A8FF]",
-    ai: "text-[#FF9A00]",
-    lr: "text-[#31A8FF]",
-    ae: "text-[#9999FF]",
-    pr: "text-[#9999FF]",
-    color: "text-[#7CFF00]",
+const OrbitIcon = ({ icon, position }) => {
+  const positions = {
+    top: "top-0 left-1/2 -translate-x-1/2",
+    right: "right-0 top-1/2 -translate-y-1/2",
+    bottom: "bottom-0 left-1/2 -translate-x-1/2",
+    left: "left-0 top-1/2 -translate-y-1/2",
   };
 
   return (
     <div
-      className={`icon-safe h-24 w-24 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-[36px] ${brandStyles[brand]}`}
+      className={`absolute ${positions[position]} w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.45)]`}
     >
-      {children}
+      {icon}
     </div>
   );
 };
 
 const ContactRow = ({ icon, value, link }) => (
-  <div className="flex items-center justify-center gap-4">
+  <div className="flex items-center gap-4">
     {icon}
     <a href={link} className="hover:text-white transition">
       {value}
