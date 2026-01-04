@@ -9,13 +9,13 @@ dotenv.config();
 const app = express();
 
 /* =======================
-   CORS CONFIG (IMPORTANT)
+   CORS CONFIG
    ======================= */
 app.use(
   cors({
     origin: [
-      "https://client1-portfolio-puce.vercel.app", // frontend
-      "http://localhost:5173", // local dev
+      "https://client1-portfolio-puce.vercel.app",
+      "http://localhost:5173",
     ],
     methods: ["GET", "POST"],
     credentials: true,
@@ -23,6 +23,11 @@ app.use(
 );
 
 app.use(express.json());
+
+/* =======================
+   IGNORE FAVICON REQUEST
+   ======================= */
+app.get("/favicon.ico", (req, res) => res.status(204).end());
 
 /* =======================
    RATE LIMITER
@@ -40,17 +45,13 @@ const contactLimiter = rateLimit({
 app.use("/api/contact", contactLimiter, contactRoutes);
 
 /* =======================
-   HEALTH CHECK (OPTIONAL)
+   HEALTH CHECK
    ======================= */
 app.get("/", (req, res) => {
   res.json({ status: "API running" });
 });
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server running on port ${process.env.PORT}`);
-});
-
 /* =======================
-   EXPORT FOR VERCEL
+   IMPORTANT FOR VERCEL
    ======================= */
 export default app;
