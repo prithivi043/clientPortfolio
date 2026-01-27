@@ -2,15 +2,14 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
+import serverless from "serverless-http";
 import contactRoutes from "./routes/contactRoutes.js";
 
 dotenv.config();
 
 const app = express();
 
-/* =======================
-   CORS CONFIG
-   ======================= */
+/* CORS */
 app.use(
   cors({
     origin: [
@@ -18,20 +17,15 @@ app.use(
       "http://localhost:5173",
     ],
     methods: ["GET", "POST"],
-    credentials: true,
   })
 );
 
 app.use(express.json());
 
-/* =======================
-   IGNORE FAVICON REQUEST
-   ======================= */
+/* favicon safe */
 app.get("/favicon.ico", (req, res) => res.status(204).end());
 
-/* =======================
-   RATE LIMITER
-   ======================= */
+/* rate limiter */
 const contactLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -39,19 +33,24 @@ const contactLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-/* =======================
-   ROUTES
-   ======================= */
+/* routes */
 app.use("/api/contact", contactLimiter, contactRoutes);
 
-/* =======================
-   HEALTH CHECK
-   ======================= */
 app.get("/", (req, res) => {
   res.json({ status: "API running" });
 });
 
-/* =======================
-   IMPORTANT FOR VERCEL
-   ======================= */
-export default app;
+/* =========================
+   LOCAL DEV ONLY
+   ========================= */
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server running locally on port ${PORT}`);
+  });
+}
+
+/* =========================
+   VERCEL EXPORT
+   ========================= */
+export const handler = serverless(app);
